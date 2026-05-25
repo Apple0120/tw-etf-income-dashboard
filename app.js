@@ -8,6 +8,9 @@ const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8�
 
 const appData = window.ETF_DASHBOARD_DATA || {};
 const appConfig = window.ETF_DASHBOARD_CONFIG || {};
+window.ETF_DASHBOARD_RUNTIME = {
+  quoteApiBase: appConfig.quoteApiBase || "",
+};
 const defaultHoldings = appData.holdings || [];
 const storedHoldings = loadStoredHoldings();
 let holdings = storedHoldings || defaultHoldings.map((item) => ({ ...item }));
@@ -338,7 +341,7 @@ async function refreshQuotes() {
     renderAll();
   } catch (error) {
     els.quoteStatus.textContent = "行情更新失敗";
-    els.lastUpdated.textContent = "使用內建估算價格";
+    els.lastUpdated.textContent = `使用內建估算價格：${error.message}`;
   }
 }
 
