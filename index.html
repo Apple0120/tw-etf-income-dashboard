@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ETF 月領作戰室</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">ETF Income Desk</p>
+        <h1>ETF 月領作戰室</h1>
+      </div>
+      <div class="market-clock">
+        <span id="quoteStatus">等待更新</span>
+        <strong id="clock">--:--:--</strong>
+      </div>
+    </header>
+
+    <main>
+      <section class="control-band">
+        <label>
+          <span>月領目標</span>
+          <input id="targetIncome" type="range" min="10000" max="80000" step="1000" value="30000" />
+          <strong id="targetIncomeLabel">NT$30,000</strong>
+        </label>
+        <label>
+          <span>每月投入</span>
+          <input id="monthlyBudget" type="number" min="0" step="1000" value="30000" />
+        </label>
+        <label>
+          <span>現金流偏好</span>
+          <select id="strategyMode">
+            <option value="balanced">均衡</option>
+            <option value="income">月配優先</option>
+            <option value="growth">成長優先</option>
+          </select>
+        </label>
+        <button id="refreshQuotes" class="primary-button" type="button">更新行情</button>
+      </section>
+
+      <section class="summary-grid">
+        <article class="metric">
+          <span>月均預估配息</span>
+          <strong id="monthlyIncome">NT$0</strong>
+          <small id="incomeGap">缺口 NT$0</small>
+        </article>
+        <article class="metric">
+          <span>年度預估配息</span>
+          <strong id="annualIncome">NT$0</strong>
+          <small>依目前持股與殖利率估算</small>
+        </article>
+        <article class="metric">
+          <span>持股市值</span>
+          <strong id="portfolioValue">NT$0</strong>
+          <small id="yieldNow">整體殖利率 --</small>
+        </article>
+        <article class="metric alert">
+          <span>最弱月份</span>
+          <strong id="weakMonth">--</strong>
+          <small id="weakMonthGap">等待計算</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <nav class="tabs" aria-label="分析頁籤">
+          <button class="tab active" data-view="cashflow" type="button">現金流</button>
+          <button class="tab" data-view="plan" type="button">買進試算</button>
+          <button class="tab" data-view="radar" type="button">主動雷達</button>
+          <button class="tab" data-view="holdings" type="button">持股校正</button>
+        </nav>
+
+        <section id="cashflow" class="view active">
+          <div class="section-head">
+            <h2>月份分佈</h2>
+            <span id="cashflowNote"></span>
+          </div>
+          <div id="monthBars" class="month-bars"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>代號</th>
+                  <th>名稱</th>
+                  <th>股數</th>
+                  <th>價格</th>
+                  <th>殖利率</th>
+                  <th>配息</th>
+                  <th>估年息</th>
+                </tr>
+              </thead>
+              <tbody id="holdingRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="plan" class="view">
+          <div class="section-head">
+            <h2>買進試算</h2>
+            <span id="planModeLabel"></span>
+          </div>
+          <div id="planList" class="plan-list"></div>
+        </section>
+
+        <section id="radar" class="view">
+          <div class="radar-layout">
+            <div>
+              <div class="section-head">
+                <h2>主動式 ETF</h2>
+                <span>00407A 已納入觀察</span>
+              </div>
+              <div class="radar-controls">
+                <button class="chip active" data-filter="all" type="button">全部</button>
+                <button class="chip" data-filter="monthly" type="button">月配</button>
+                <button class="chip" data-filter="quarterly" type="button">季配</button>
+                <button class="chip" data-filter="overseas" type="button">海外標的</button>
+                <button class="chip" data-filter="new" type="button">新品</button>
+              </div>
+              <div id="activeEtfRows" class="active-etf-list"></div>
+            </div>
+            <figure class="source-image">
+              <img src="./assets/threads_active_etf.webp" alt="主動式 ETF 表格來源圖" />
+            </figure>
+          </div>
+        </section>
+
+        <section id="holdings" class="view">
+          <div class="section-head">
+            <h2>持股校正</h2>
+            <span>集保張數 × 1000 + 零股</span>
+          </div>
+          <div class="private-data-panel">
+            <div>
+              <strong>私人持股資料</strong>
+              <p>貼上 JSON 後只會存在這台裝置的瀏覽器，不會送到 GitHub 或伺服器。</p>
+            </div>
+            <textarea id="holdingsJson" spellcheck="false"></textarea>
+            <div class="private-actions">
+              <button id="saveHoldings" class="primary-button" type="button">儲存在此瀏覽器</button>
+              <button id="resetHoldings" class="secondary-button" type="button">還原公開範例</button>
+              <button id="exportHoldings" class="secondary-button" type="button">匯出目前資料</button>
+            </div>
+            <small id="holdingsDataStatus">尚未變更</small>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>代號</th>
+                  <th>集保張數</th>
+                  <th>零股</th>
+                  <th>融資張數</th>
+                  <th>總股數</th>
+                </tr>
+              </thead>
+              <tbody id="correctionRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span>資料僅供個人分析，不構成投資建議。</span>
+      <span id="lastUpdated">尚未連線</span>
+    </footer>
+
+    <script src="./config.sample.js"></script>
+    <script src="./config.local.js"></script>
+    <script src="./data.sample.js"></script>
+    <script src="./data.local.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

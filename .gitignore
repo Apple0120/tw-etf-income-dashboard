@@ -1,0 +1,5 @@
+data.local.js
+config.local.js
+*.log
+node_modules/
+.DS_Store

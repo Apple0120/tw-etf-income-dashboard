@@ -1,0 +1,10 @@
+{
+  "name": "tw-etf-income-dashboard",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A local-first Taiwan ETF income dashboard with private holdings kept outside git.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}
